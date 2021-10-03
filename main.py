@@ -8,9 +8,8 @@ from pytube import Search
 from PIL import Image, ImageTk
 import urllib.request
 from tkinter import messagebox
-
-
 # from io import BytesIO
+
 
 class MainWindow:
     def __init__(self):
@@ -84,21 +83,35 @@ class MainWindow:
                 self.__list_box.insert(i, vid_name.results[i].title)
 
     # Download Func
+    @staticmethod
+    def complete(link, path):
+        messagebox.showinfo("Completed", f"""Video has Downloaded\nFile Saved at {path}""")
+        print(link)
+
     def download(self):
 
         if self.__quality_selected.get() == 'High-Quality':
+
             selected_vid = self.__list_box.curselection()[0]
+            vid_name.results[selected_vid].register_on_complete_callback(self.complete)
+
             selected_vid = vid_name.results[selected_vid].streams.get_highest_resolution()
             selected_vid.download('DownloadedVideo')
 
         elif self.__quality_selected.get() == '720p' or self.__quality_selected.get() == '480p':
+
             selected_vid = self.__list_box.curselection()[0]
+            vid_name.results[selected_vid].register_on_complete_callback(self.complete)
+
             selected_vid = vid_name.results[selected_vid].streams.filter(progressive=True,
                                                                          res=self.__quality_selected.get()).first()
             selected_vid.download('DownloadedVideo')
 
         elif self.__quality_selected.get() == 'Audio-Only':
+
             selected_vid = self.__list_box.curselection()[0]
+            vid_name.results[selected_vid].register_on_complete_callback(self.complete)
+
             selected_vid = vid_name.results[selected_vid].streams.filter(only_audio=True).first()
             selected_vid.download('DownloadedVideo')
 
