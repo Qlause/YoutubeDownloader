@@ -1,14 +1,15 @@
-import Func_YT
 import io
 import tkinter as tk
 # from tkinter import messagebox
 # import pytube
 # import requests
 # from pytube import YouTube
-from pytube import Saearch
+from pytube import Search
 from PIL import Image, ImageTk
 import urllib.request
 from tkinter import messagebox
+
+
 # from io import BytesIO
 
 class MainWindow:
@@ -55,7 +56,7 @@ class MainWindow:
         self.__download_button.grid(row=3, column=2)
 
         # Option
-        self.__quality = ['Standard','High-Quality', '720p', '480p', 'Audio-Only']
+        self.__quality = ['Standard', 'High-Quality', '720p', '480p', 'Audio-Only']
         self.__quality_selected = tk.StringVar()
         self.__quality_selected.set('Standard')
 
@@ -84,15 +85,16 @@ class MainWindow:
 
         elif self.__quality_selected.get() == 'High-Quality':
             selected_vid = self.__list_box.curselection()[0]
-            selected_vid = vid_name.results[selected_vid].streams.filter(progressive=True).first()
+            selected_vid = vid_name.results[selected_vid].streams.get_highest_resolution()
             selected_vid.download('DownloadedVideo')
 
-        elif self.__quality_selected.get() == '720p' or '480p':
+        elif self.__quality_selected.get() == '720p' or self.__quality_selected.get() == '480p':
             selected_vid = self.__list_box.curselection()[0]
-            selected_vid = vid_name.results[selected_vid].streams.filter(progressive=True, res=self.__quality_selected.get()).first()
+            selected_vid = vid_name.results[selected_vid].streams.filter(progressive=True,
+                                                                         res=self.__quality_selected.get()).first()
             selected_vid.download('DownloadedVideo')
 
-        else:
+        elif self.__quality_selected.get() == 'Audio-Only':
             selected_vid = self.__list_box.curselection()[0]
             selected_vid = vid_name.results[selected_vid].streams.filter(only_audio=True).first()
             selected_vid.download('DownloadedVideo')
@@ -104,26 +106,32 @@ class MainWindow:
 
         if self.__quality_selected.get() == 'Standard':
             selected_vid = self.__list_box.curselection()[0]
-            selected_vid = vid_name.results[selected_vid].streams.filter(progressive=True, res='720p').first()
+            selected_vid = vid_name.results[selected_vid].streams.filter(progressive=True).first()
             thumbnail = vid_name.results[self.__list_box.curselection()[0]].thumbnail_url
+
+            VidInfo(selected_vid, thumbnail)
 
         elif self.__quality_selected.get() == 'High-Quality':
             selected_vid = self.__list_box.curselection()[0]
             selected_vid = vid_name.results[selected_vid].streams.filter(adaptive=True).first()
             thumbnail = vid_name.results[self.__list_box.curselection()[0]].thumbnail_url
 
-        elif self.__quality_selected.get() == '720p' or '480p':
+            VidInfo(selected_vid, thumbnail)
+
+        elif self.__quality_selected.get() == '720p' or self.__quality_selected.get() == '480p':
+
+            res = str(self.__quality_selected.get())
             selected_vid = self.__list_box.curselection()[0]
-            selected_vid = vid_name.results[selected_vid].streams.filter(progressive=True, res=self.__quality_selected.get()).first()
+            selected_vid = vid_name.results[selected_vid].streams.filter(res=res).first()
             thumbnail = vid_name.results[self.__list_box.curselection()[0]].thumbnail_url
 
-        else:
+            VidInfo(selected_vid, thumbnail)
+
+        elif self.__quality_selected.get() == 'Audio-Only':
             selected_vid = self.__list_box.curselection()[0]
             selected_vid = vid_name.results[selected_vid].streams.filter(only_audio=True).first()
             thumbnail = vid_name.results[self.__list_box.curselection()[0]].thumbnail_url
 
-        # Open New Window
-        if selected_vid:
             VidInfo(selected_vid, thumbnail)
 
         else:
@@ -142,7 +150,7 @@ class VidInfo:
         self.__label.pack()
 
         # Vid Info
-        self.__filesize = tk.Label(self.__top_level, text=f"File Size : {link.filesize/1000000} MB")
+        self.__filesize = tk.Label(self.__top_level, text=f"File Size : {link.filesize / 1000000} MB")
         self.__filesize.pack()
 
         # Thumbnail
