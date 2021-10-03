@@ -1,14 +1,10 @@
 import io
 import tkinter as tk
-# from tkinter import messagebox
-# import pytube
-# import requests
 from pytube import YouTube
 from pytube import Search
 from PIL import Image, ImageTk
 import urllib.request
 from tkinter import messagebox
-# from io import BytesIO
 
 
 class MainWindow:
