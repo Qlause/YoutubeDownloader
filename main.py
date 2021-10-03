@@ -3,7 +3,7 @@ import tkinter as tk
 # from tkinter import messagebox
 # import pytube
 # import requests
-# from pytube import YouTube
+from pytube import YouTube
 from pytube import Search
 from PIL import Image, ImageTk
 import urllib.request
@@ -67,13 +67,21 @@ class MainWindow:
 
     # Search Func
     def search(self):
-        self.__list_box.delete(0, tk.END)
-
         global vid_name
-        vid_name = Search(self.__link.get())
 
-        for i in range(0, 5):
-            self.__list_box.insert(i, vid_name.results[i].title)
+        self.__list_box.delete(0, tk.END)
+        inp_user = str(self.__link.get())
+
+        if inp_user[0:5] == 'https':
+
+            user_link = YouTube(inp_user)
+            vid_name = Search(user_link.title)
+            self.__list_box.insert(0, vid_name.results[0].title)
+
+        else:
+            vid_name = Search(inp_user)
+            for i in range(0, 5):
+                self.__list_box.insert(i, vid_name.results[i].title)
 
     # Download Func
     def download(self):
@@ -97,8 +105,6 @@ class MainWindow:
     # Next Button
     def more(self):
 
-        print(self.__quality_selected.get())
-
         if self.__quality_selected.get() == 'High-Quality':
             selected_vid = self.__list_box.curselection()[0]
             selected_vid = vid_name.results[selected_vid].streams.filter(adaptive=True).first()
@@ -109,6 +115,7 @@ class MainWindow:
         elif self.__quality_selected.get() == '720p' or self.__quality_selected.get() == '480p':
 
             res = str(self.__quality_selected.get())
+
             selected_vid = self.__list_box.curselection()[0]
             selected_vid = vid_name.results[selected_vid].streams.filter(res=res).first()
             thumbnail = vid_name.results[self.__list_box.curselection()[0]].thumbnail_url
