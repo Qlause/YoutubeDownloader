@@ -56,9 +56,9 @@ class MainWindow:
         self.__download_button.grid(row=3, column=2)
 
         # Option
-        self.__quality = ['Standard', 'High-Quality', '720p', '480p', 'Audio-Only']
+        self.__quality = ['High-Quality', '720p', '480p', 'Audio-Only']
         self.__quality_selected = tk.StringVar()
-        self.__quality_selected.set('Standard')
+        self.__quality_selected.set('720p')
 
         self.__options = tk.OptionMenu(self.__mainframe, self.__quality_selected, *self.__quality)
         self.__options.grid(row=3, column=1)
@@ -78,12 +78,7 @@ class MainWindow:
     # Download Func
     def download(self):
 
-        if self.__quality_selected.get() == 'Standard':
-            selected_vid = self.__list_box.curselection()[0]
-            selected_vid = vid_name.results[selected_vid].streams.filter(progressive=True, res='720p').first()
-            selected_vid.download('DownloadedVideo')
-
-        elif self.__quality_selected.get() == 'High-Quality':
+        if self.__quality_selected.get() == 'High-Quality':
             selected_vid = self.__list_box.curselection()[0]
             selected_vid = vid_name.results[selected_vid].streams.get_highest_resolution()
             selected_vid.download('DownloadedVideo')
@@ -104,14 +99,7 @@ class MainWindow:
 
         print(self.__quality_selected.get())
 
-        if self.__quality_selected.get() == 'Standard':
-            selected_vid = self.__list_box.curselection()[0]
-            selected_vid = vid_name.results[selected_vid].streams.filter(progressive=True).first()
-            thumbnail = vid_name.results[self.__list_box.curselection()[0]].thumbnail_url
-
-            VidInfo(selected_vid, thumbnail)
-
-        elif self.__quality_selected.get() == 'High-Quality':
+        if self.__quality_selected.get() == 'High-Quality':
             selected_vid = self.__list_box.curselection()[0]
             selected_vid = vid_name.results[selected_vid].streams.filter(adaptive=True).first()
             thumbnail = vid_name.results[self.__list_box.curselection()[0]].thumbnail_url
