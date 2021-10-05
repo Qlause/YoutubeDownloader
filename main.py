@@ -119,7 +119,7 @@ class MainWindow:
             selected_vid = vid_name.results[selected_vid].streams.filter(adaptive=True).first()
             thumbnail = vid_name.results[self.__list_box.curselection()[0]].thumbnail_url
 
-            VidInfo(selected_vid, thumbnail)
+            VidInfo(selected_vid, thumbnail, vid_name.results[self.__list_box.curselection()[0]])
 
         elif self.__quality_selected.get() == '720p' or self.__quality_selected.get() == '480p':
 
@@ -129,21 +129,21 @@ class MainWindow:
             selected_vid = vid_name.results[selected_vid].streams.filter(res=res).first()
             thumbnail = vid_name.results[self.__list_box.curselection()[0]].thumbnail_url
 
-            VidInfo(selected_vid, thumbnail)
+            VidInfo(selected_vid, thumbnail, vid_name.results[self.__list_box.curselection()[0]])
 
         elif self.__quality_selected.get() == 'Audio-Only':
             selected_vid = self.__list_box.curselection()[0]
             selected_vid = vid_name.results[selected_vid].streams.filter(only_audio=True).first()
             thumbnail = vid_name.results[self.__list_box.curselection()[0]].thumbnail_url
 
-            VidInfo(selected_vid, thumbnail)
+            VidInfo(selected_vid, thumbnail, vid_name.results[self.__list_box.curselection()[0]])
 
         else:
             messagebox.showinfo("Info", """Video/Audio Not Available. Try Another Video's type""")
 
 
 class VidInfo:
-    def __init__(self, link, link_thumbnail):
+    def __init__(self, link, link_thumbnail, links):
         self.__top_level = tk.Toplevel()
         self.__top_level.title(f"""Pre-view Video""")
         self.__top_level.resizable(width=False, height=False)
@@ -153,9 +153,21 @@ class VidInfo:
         self.__label = tk.Label(self.__top_level, text=link.title)
         self.__label.pack()
 
-        # Vid Info
+        # Vid Info Filesize
         self.__filesize = tk.Label(self.__top_level, text=f"File Size : {link.filesize / 1000000} MB")
         self.__filesize.pack()
+
+        # Vid Info Views
+        self.__views = tk.Label(self.__top_level, text=f"Views Times : {links.views} times")
+        self.__views.pack()
+
+        # Vid Info Author
+        self.__author = tk.Label(self.__top_level, text=f"Author : {links.author}")
+        self.__author.pack()
+
+        # Vid Info Length
+        self.__Length = tk.Label(self.__top_level, text=f"Vid Length : {links.length / 60} Min")
+        self.__author.pack()
 
         # Thumbnail
         self.__req = urllib.request.urlopen(link_thumbnail).read()
